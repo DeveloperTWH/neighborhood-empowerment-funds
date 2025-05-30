@@ -56,7 +56,7 @@ export default function SuccessStories() {
     <section className="bg-white py-20 px-4 md:px-8">
       <div className="max-w-6xl mx-auto">
         <h2 className="relative text-4xl md:text-4xl font-bold text-center text-gray-900 mb-16 md:w-3/5 mx-auto leading-snug z-10">
-          WE'VE HELPED CREATORS RAISE <br className="hidden md:block" />
+          WE&#39;VE HELPED CREATORS RAISE <br className="hidden md:block" />
           MILLIONS FOR THEIR DREAM JOBS
           <span className="absolute bottom-0 left-10 w-[200px] h-[8px] bg-yellow-400 rotate-[-6deg] -z-10"></span>
         </h2>
