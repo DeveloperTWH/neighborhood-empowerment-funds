@@ -137,7 +137,7 @@ export default function Clients() {
     return (
         <section
             ref={sectionRef}
-            className="py-20 px-4 md:px-16 bg-gray-50 max-w-7xl mx-auto"
+            className="py-20 px-4 md:px-16 bg-gray-50 max-w-7xl mx-auto overflow-x-hidden"
         >
             <div className="flex flex-col md:flex-row gap-12 mt-10">
                 {/* Left: Photos + pagination */}
