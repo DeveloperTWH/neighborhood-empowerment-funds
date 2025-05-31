@@ -1,4 +1,7 @@
 {
   "/_not-found/page": "/_not-found",
-  "/page": "/"
+  "/process/page": "/process",
+  "/page": "/",
+  "/campaigns/[id]/page": "/campaigns/[id]",
+  "/campaigns/page": "/campaigns"
 }
