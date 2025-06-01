@@ -15,6 +15,14 @@
   "headers": [],
   "dynamicRoutes": [
     {
+      "page": "/blog/[blog_id]",
+      "regex": "^/blog/([^/]+?)(?:/)?$",
+      "routeKeys": {
+        "nxtPblog_id": "nxtPblog_id"
+      },
+      "namedRegex": "^/blog/(?<nxtPblog_id>[^/]+?)(?:/)?$"
+    },
+    {
       "page": "/campaigns/[id]",
       "regex": "^/campaigns/([^/]+?)(?:/)?$",
       "routeKeys": {
@@ -37,6 +45,12 @@
       "namedRegex": "^/_not\\-found(?:/)?$"
     },
     {
+      "page": "/blog",
+      "regex": "^/blog(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/blog(?:/)?$"
+    },
+    {
       "page": "/campaigns",
       "regex": "^/campaigns(?:/)?$",
       "routeKeys": {},
@@ -47,6 +61,12 @@
       "regex": "^/process(?:/)?$",
       "routeKeys": {},
       "namedRegex": "^/process(?:/)?$"
+    },
+    {
+      "page": "/services",
+      "regex": "^/services(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/services(?:/)?$"
     }
   ],
   "dataRoutes": [],
