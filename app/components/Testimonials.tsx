@@ -6,15 +6,7 @@ const Testimonials = () => {
   return (
     <div className='pb-20 border-b-2 border-amber-200'>
       {/* Heading and intro */}
-      <div className="flex flex-col md:flex-row items-start md:items-center justify-between max-w-6xl mx-auto gap-6 px-4 sm:px-0 mb-16">
-        <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 leading-tight md:w-3/5 break-words whitespace-normal">
-          FEEDBACK FROM OUR <br className="hidden md:block" />
-          HAPPY CLIENTS
-        </h2>
-        <p className="text-gray-600 md:w-2/5">
-          Various versions have evolved over the years, sometimes by accident, sometimes on purpose (injected humour and the like). Various versions have evolved over the years, sometimes by accident, sometimes on purpose (injected humour and the like).
-        </p>
-      </div>
+      
 
       {/* Testimonials carousel or content */}
       <Clients />
