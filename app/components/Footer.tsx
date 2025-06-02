@@ -76,7 +76,7 @@ export default function Footer() {
 
           {/* Navigation Links */}
           <div className="flex justify-start md:justify-end">
-            <div className="flex flex-col space-y-2 text-sm text-gray-400">
+            <div className="flex flex-col space-y-2 text-sm text-gray-400 md:items-end">
               <Link href="/about" className="hover:text-yellow-400 transition">
                 About
               </Link>

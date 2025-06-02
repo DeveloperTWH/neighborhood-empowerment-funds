@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { ChevronDown, Menu, X } from "lucide-react";
 
@@ -12,7 +13,15 @@ export default function Navbar() {
       <div className="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
         {/* Logo / Brand */}
         <div className="text-xl font-bold leading-tight">
-          Neighborhood Empowerment<br />Funds
+          <Link href="/" className="flex items-center">
+            <Image
+              src="/index/logo.webp"
+              alt="Lift and Lunch Logo"
+              width={200}
+              height={200}
+              priority
+            />
+          </Link>
         </div>
 
         {/* Desktop Navigation */}
