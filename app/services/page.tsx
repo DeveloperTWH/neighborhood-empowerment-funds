@@ -3,6 +3,8 @@
 import React from "react";
 import Image from "next/image";
 import { CheckCircle } from "lucide-react";
+import Clients from "../components/Clients";
+import FAQSection from "../components/FAQSection";
 
 const services = [
   {
@@ -52,7 +54,7 @@ const services = [
 export default function ServicesPage() {
   return (
     <div className="bg-white text-black">
-      <section className="max-w-screen-xl mx-auto px-4 py-20">
+      <section className="max-w-screen-xl mx-auto px-4 pt-5 md:pt-20">
         <h2 className="text-3xl font-bold mb-12 text-[#001d59] underline decoration-yellow-400">IT SERVICES</h2>
 
         {services.map((service, i) => (
@@ -60,11 +62,11 @@ export default function ServicesPage() {
             {i % 2 === 0 ? (
               <>
                 <Image
-                  src={service.image}
+                  src="/service/image.png"
                   alt={service.title}
                   width={600}
                   height={400}
-                  className="rounded-lg w-full h-auto object-cover"
+                  className="rounded-lg w-full md:w-4/5 h-auto object-cover"
                 />
                 <div>
                   <h3 className="text-xl font-semibold mb-4">{service.title}</h3>
@@ -98,11 +100,11 @@ export default function ServicesPage() {
                   </button>
                 </div>
                 <Image
-                  src={service.image}
+                  src="/service/image.png"
                   alt={service.title}
                   width={600}
                   height={400}
-                  className="rounded-lg w-full h-auto object-cover"
+                  className="rounded-lg w-full md:w-4/5 h-auto object-cover"
                 />
               </>
             )}
@@ -110,32 +112,81 @@ export default function ServicesPage() {
         ))}
       </section>
 
-      {/* Get the award-winning support section */}
-      <section className="relative w-full overflow-hidden">
-        <div className="relative w-full h-[500px]">
+      {/* Highlight Section */}
+      <section className="relative w-full bg-white mb-[160px]">
+        {/* Background Image */}
+        <div className="relative w-full h-96 md:h-[500px]">
           <Image
-            src="/index/image (5).png"
-            alt="Award video"
-            layout="fill"
-            objectFit="cover"
-            className="w-full h-full object-cover"
+            src="/service/banner.webp"
+            alt="Award support background"
+            fill
+            className="object-cover w-full h-full"
+            priority
           />
         </div>
-        <div className="absolute bottom-[-100px] left-1/2 transform -translate-x-1/2 z-10">
-          <div className="bg-white text-center text-black p-10 rounded-xl shadow-lg max-w-xl w-full">
-            <h2 className="text-2xl md:text-3xl font-bold mb-4">
-              Get the award-winning<br /> support you deserve
-            </h2>
-            <p className="text-sm text-gray-600 mb-6">
-              As a multi-Stevie Award winner for customer service and a 1st place recipient.
+
+        {/* Floating Text Block */}
+        <div className="absolute bottom-[-100px] left-1/2 transform -translate-x-1/2 z-10 w-[90%] md:w-auto">
+          <div className="rounded-2xl md:px-20 px-5 py-7 md:py-12 text-center bg-[radial-gradient(ellipse_at_50%_50%,#ffffff,#FFD700_90%)] shadow-lg">
+            <h1 className="md:text-2xl text-xl font-semibold text-gray-900">
+              Get the award-winning support you deserve
+            </h1>
+            <p className="text-gray-700 mt-4 md:text-base text-sm">
+              Lorem ipsum dolor sit amet consectetur adipisicing elit. Cupiditate, esse! Maiores voluptas harum, corporis recusandae magni explicabo excepturi delectus similique dolore non quo, cumque eum doloribus suscipit, nemo autem dicta.
             </p>
-            <button className="bg-black text-white px-6 py-2 rounded-full hover:bg-gray-800 text-sm">
-              CONTACT US NOW
+            <button className="bg-black text-white px-12 py-2 rounded-full hover:bg-black/90 transition-all duration-300 text-center mt-6">
+              CONTACT US
             </button>
           </div>
         </div>
-        <div className="h-[200px]"></div>
       </section>
+      {/* Trusted Partners */}
+      <section className="md:py-14 pb-8 mb-10 max-w-7xl mx-auto md:px-8 px-4">
+        <h1 className="md:text-5xl text-3xl text-dark font-semibold text-center relative">
+          Our Trusted Partners
+          <div className="absolute md:bottom-1 bottom-1 md:right-[30%] right-[55%] md:w-64 w-24 h-2 bg-primary/75 -rotate-2 -z-10"></div>
+        </h1>
+
+        import Image from 'next/image';
+
+        <div className="flex items-center md:gap-16 mt-14 md:justify-center gap-10 flex-wrap justify-center">
+          <Image
+            alt="logo1"
+            src="/service/ey.png"
+            width={144} // width 36 * 4 = 144px
+            height={56} // approximate height
+            className="md:h-14 md:w-auto w-36 object-contain"
+          />
+          <Image
+            alt="logo2"
+            src="/service/utkarsh.png"
+            width={144}
+            height={56}
+            className="md:h-14 md:w-auto w-36 object-contain"
+          />
+          <Image
+            alt="logo3"
+            src="/service/reliance.png"
+            width={144}
+            height={56}
+            className="md:h-14 md:w-auto w-36 object-contain"
+          />
+          <Image
+            alt="logo4"
+            src="/service/flipkart.png"
+            width={144}
+            height={56}
+            className="md:h-14 md:w-auto w-36 object-contain"
+          />
+        </div>
+
+      </section>
+
+      <Clients />
+
+      <FAQSection />
+
+
     </div>
   );
 }

@@ -57,6 +57,12 @@
       "namedRegex": "^/campaigns(?:/)?$"
     },
     {
+      "page": "/contact",
+      "regex": "^/contact(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/contact(?:/)?$"
+    },
+    {
       "page": "/process",
       "regex": "^/process(?:/)?$",
       "routeKeys": {},

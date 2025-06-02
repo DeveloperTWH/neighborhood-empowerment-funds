@@ -10,7 +10,7 @@ const blogData = [
   {
     id: "1",
     title: "Learn everything there is to know about the",
-    image: "/blog-1.jpg",
+    image: "/blog/1.png",
     date: "02 Sep 2024",
     readTime: "5 min read",
     category: "Technology",
@@ -20,8 +20,8 @@ const blogData = [
   {
     id: "2",
     title: "Learn everything there is to know about the",
-    image: "/blog-2.jpg",
-    date: "02 Sep 2024",
+     image: "/blog/2.png",
+    date: "01 june 2025",
     readTime: "6 min read",
     category: "Art",
     featured: true,
@@ -30,7 +30,7 @@ const blogData = [
   {
     id: "3",
     title: "Learn everything there is to know about the",
-    image: "/blog-3.jpg",
+     image: "/blog/3.png",
     date: "01 Sep 2024",
     readTime: "5 min read",
     category: "AI",
@@ -40,7 +40,7 @@ const blogData = [
   ...Array.from({ length: 12 }).map((_, i) => ({
     id: `${i + 4}`,
     title: "Learn everything there is to know about the",
-    image: `/blog-${(i % 6) + 1}.jpg`,
+    image: `/blog/${(i % 6) + 1}.png`,
     date: "02 Sep 2024",
     readTime: `${5 + (i % 3)} min read`,
     category: i % 2 === 0 ? "Tech" : "Design",

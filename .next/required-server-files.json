@@ -96,7 +96,7 @@
         "transform": "lodash/{{member}}"
       }
     },
-    "outputFileTracingRoot": "C:\\Users\\Lenovo\\OneDrive\\Desktop\\Techware hut\\neighborhood-empowerment-funds",
+    "outputFileTracingRoot": "C:\\Users\\DAY\\OneDrive\\Desktop\\Neighborhood\\neighborhood-empowerment-funds",
     "experimental": {
       "nodeMiddleware": false,
       "cacheLife": {
@@ -154,7 +154,7 @@
       "middlewarePrefetch": "flexible",
       "optimisticClientCache": true,
       "manualClientBasePath": false,
-      "cpus": 11,
+      "cpus": 3,
       "memoryBasedWorkersCount": false,
       "imgOptConcurrency": null,
       "imgOptTimeoutInSeconds": 7,
@@ -279,10 +279,10 @@
     "bundlePagesRouterDependencies": false,
     "configFileName": "next.config.ts",
     "turbopack": {
-      "root": "C:\\Users\\Lenovo\\OneDrive\\Desktop\\Techware hut\\neighborhood-empowerment-funds"
+      "root": "C:\\Users\\DAY\\OneDrive\\Desktop\\Neighborhood\\neighborhood-empowerment-funds"
     }
   },
-  "appDir": "C:\\Users\\Lenovo\\OneDrive\\Desktop\\Techware hut\\neighborhood-empowerment-funds",
+  "appDir": "C:\\Users\\DAY\\OneDrive\\Desktop\\Neighborhood\\neighborhood-empowerment-funds",
   "relativeAppDir": "",
   "files": [
     ".next\\routes-manifest.json",

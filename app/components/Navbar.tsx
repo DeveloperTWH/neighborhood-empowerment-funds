@@ -17,6 +17,7 @@ export default function Navbar() {
 
         {/* Desktop Navigation */}
         <nav className="hidden md:flex space-x-6 items-center relative">
+          <Link href="/">Home</Link>
           <Link href="#">About</Link>
 
           {/* Explore Dropdown */}

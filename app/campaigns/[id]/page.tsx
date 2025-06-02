@@ -9,22 +9,24 @@ import {
   Info,
   CheckCircle,
   Lock,
+  Instagram,
+  Facebook,
+  Lightbulb,
 } from "lucide-react";
 
 const galleryImages = [
-  "/campaign-hero.jpg",
-  "/thumb-1.jpg",
-  "/thumb-2.jpg",
-  "/thumb-3.jpg",
-  "/thumb-4.jpg",
-  "/thumb-5.jpg",
+  "/campaign/Image (17).png",
+  "/campaign/Image (13).png",
+  "/campaign/Image (14).png",
+  "/campaign/Image (15).png",
+  "/campaign/Image (16).png",
 ];
 
 const CampaignDetailPage = () => {
   const [selectedImage, setSelectedImage] = useState(galleryImages[0]);
 
   return (
-    <div className="bg-white text-black">
+    <div className="bg-white text-black mt-5">
       {/* Hero + Gallery */}
       <section>
         <div className="max-w-screen-xl mx-auto px-4">
@@ -69,7 +71,7 @@ const CampaignDetailPage = () => {
             {/* Logo + Title + Description */}
             <div className="flex items-start gap-4">
               <Image
-                src="/padelhub-logo.png"
+                src="/campaign/logo.png"
                 alt="Padel Hub Logo"
                 width={48}
                 height={48}
@@ -95,7 +97,7 @@ const CampaignDetailPage = () => {
             <div className="space-y-6">
               <div className="flex justify-between items-center">
                 <h2 className="text-xl font-bold flex items-center gap-2">
-                  <Info size={20} className="text-gray-700" /> Key information
+                  <Lightbulb size={25} className="text-gray-700" /> Key information
                 </h2>
                 <div className="flex items-center gap-4 text-sm text-blue-600">
                   <a
@@ -117,20 +119,10 @@ const CampaignDetailPage = () => {
                     <Linkedin size={16} />
                   </a>
                   <a href="#" className="hover:underline">
-                    <Image
-                      src="/icon-instagram.svg"
-                      alt="ig"
-                      width={16}
-                      height={16}
-                    />
+                    <Instagram size={16} />
                   </a>
                   <a href="#" className="hover:underline">
-                    <Image
-                      src="/icon-facebook.svg"
-                      alt="fb"
-                      width={16}
-                      height={16}
-                    />
+                    <Facebook size={16}/>
                   </a>
                 </div>
               </div>
@@ -267,7 +259,7 @@ const CampaignDetailPage = () => {
                 </p>
                 <div className="flex justify-center mt-6">
                   <Image
-                    src="/lock-bag.svg"
+                    src="/campaign/padlock.png"
                     alt="lock bag"
                     width={100}
                     height={100}
@@ -320,7 +312,7 @@ const CampaignDetailPage = () => {
 
       {/* Approved & Risk Section */}
       <section className="bg-[#fffdf6] py-16 px-6">
-        <div className="max-w-screen-md mx-auto space-y-12">
+        <div className="max-w-screen-xl mx-auto space-y-12">
           {/* Approval Block */}
           <div>
             <h3 className="text-lg font-bold text-gray-900 mb-2">
