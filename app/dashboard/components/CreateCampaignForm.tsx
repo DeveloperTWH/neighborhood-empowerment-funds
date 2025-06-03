@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { useSession } from 'next-auth/react'; // ✅ Import session
 
 type Section = { title: string; description: string };
 
@@ -30,6 +31,7 @@ interface CampaignFormData {
 
 export default function CreateCampaignForm() {
   const router = useRouter();
+  const { data: session } = useSession(); // ✅ Get session
   const [loading, setLoading] = useState(false);
 
   const [formData, setFormData] = useState<CampaignFormData>({
@@ -84,7 +86,10 @@ export default function CreateCampaignForm() {
   };
 
   const addSection = () => {
-    setFormData(prev => ({ ...prev, sections: [...prev.sections, { title: '', description: '' }] }));
+    setFormData(prev => ({
+      ...prev,
+      sections: [...prev.sections, { title: '', description: '' }],
+    }));
   };
 
   const removeSection = (index: number) => {
@@ -132,6 +137,12 @@ export default function CreateCampaignForm() {
     e.preventDefault();
     setLoading(true);
 
+    if (!session?.user?.id) {
+      alert("You must be signed in to create a campaign.");
+      setLoading(false);
+      return;
+    }
+
     const form = new FormData();
     form.append('title', formData.title);
     form.append('description', formData.description);
@@ -146,20 +157,18 @@ export default function CreateCampaignForm() {
     form.append('instagramLink', formData.instagramLink);
     form.append('facebookLink', formData.facebookLink);
     form.append('deadline', formData.deadline);
+    form.append('amountRaised', formData.amountRaised);
+    form.append('investorCount', formData.investorCount);
+    form.append('ownerId', session.user.id); // ✅ send ownerId
 
     if (formData.logoFile) form.append('logoFile', formData.logoFile);
     formData.galleryFiles.forEach(file => form.append('galleryFiles', file));
 
     form.append('categories', JSON.stringify(formData.categories));
     form.append('sections', JSON.stringify(formData.sections));
-    form.append('valueHighlights', JSON.stringify(formData.valueHighlights)); // updated key here
+    form.append('valueHighlights', JSON.stringify(formData.valueHighlights));
 
     try {
-      Object.entries(formData).forEach(([key, value]) => {
-  console.log(key, value);
-});
-
-
       const res = await fetch('/api/campaigns', {
         method: 'POST',
         body: form,
