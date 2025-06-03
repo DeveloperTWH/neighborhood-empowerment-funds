@@ -1,10 +1,9 @@
 "use client";
 
 import Image from "next/image";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import gsap from "gsap";
 import Link from "next/link";
-import React from "react";
 
 const testimonials = [
   {
@@ -60,7 +59,7 @@ export default function Clients() {
   const getNeighborIndex = (offset: number) =>
     (activeIndex + offset + testimonials.length) % testimonials.length;
 
-  const animatePhotos = () => {
+  const animatePhotos = useCallback(() => {
     const angles = [-70, 0, 70];
     const radius = 120;
 
@@ -84,9 +83,9 @@ export default function Clients() {
         ease: "power2.out",
       });
     });
-  };
+  }, [photoRefs]);
 
-  const animateContent = () => {
+  const animateContent = useCallback(() => {
     if (!contentRef.current) return;
 
     gsap.to(contentRef.current, {
@@ -99,12 +98,14 @@ export default function Clients() {
         });
       },
     });
-  };
+  }, [contentRef]);
 
   const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
     if (!sectionRef.current) return;
+
+    const currentSection = sectionRef.current;
 
     const observer = new IntersectionObserver(
       (entries) => {
@@ -117,10 +118,10 @@ export default function Clients() {
       { threshold: 0.3 }
     );
 
-    observer.observe(sectionRef.current);
+    observer.observe(currentSection);
 
     return () => {
-      if (sectionRef.current) observer.unobserve(sectionRef.current);
+      observer.unobserve(currentSection);
     };
   }, []);
 
@@ -129,7 +130,7 @@ export default function Clients() {
       animatePhotos();
       animateContent();
     }
-  }, [activeIndex, isVisible]);
+  }, [activeIndex, isVisible, animatePhotos, animateContent]);
 
   const changeIndex = (dir: "prev" | "next") => {
     const next =
@@ -228,7 +229,7 @@ export default function Clients() {
               </button>
             </div>
           </div>
-          <div className="">
+          <div>
             <div
               ref={contentRef}
               className="flex-1 rounded-xl opacity-100 mb-10"
@@ -244,7 +245,7 @@ export default function Clients() {
                 <p className="font-semibold text-gray-900 text-xl">
                   {testimonials[activeIndex].name}
                 </p>
-                <p className="">{testimonials[activeIndex].role}</p>
+                <p>{testimonials[activeIndex].role}</p>
               </div>
             </div>
 
