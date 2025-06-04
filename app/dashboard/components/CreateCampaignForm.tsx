@@ -178,6 +178,7 @@ export default function CreateCampaignForm() {
 
       alert('Campaign created successfully!');
       router.push('/dashboard');
+      router.refresh();
     } catch (err) {
       console.error(err);
       alert('Error creating campaign');
