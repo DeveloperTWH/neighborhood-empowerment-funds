@@ -1,4 +1,4 @@
-// File: C:\Users\DAY\OneDrive\Desktop\Neighborhood\neighborhood-empowerment-funds\app\api\auth\signup\route.ts
+// File: C:\Users\Lenovo\OneDrive\Desktop\Techware hut\neighborhood-empowerment-funds\app\api\auth\signup\route.ts
 import * as entry from '../../../../../../app/api/auth/signup/route.js'
 import type { NextRequest } from 'next/server.js'
 

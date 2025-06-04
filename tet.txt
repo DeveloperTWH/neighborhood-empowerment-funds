@@ -1,0 +1,116 @@
+import { notFound } from 'next/navigation';
+import Image from 'next/image';
+import { Globe, Building2, Linkedin, Info, CheckCircle, Instagram, Facebook, Lightbulb } from 'lucide-react';
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+interface CampaignPageProps {
+  params: any;
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export default async function CampaignDetailPage({ params }: CampaignPageProps): Promise<React.ReactElement> {
+  const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/campaigns/${params.id}`, {
+    cache: 'no-store',
+  });
+
+  if (!res.ok) return notFound();
+
+  const { campaign } = await res.json();
+  const images = campaign.gallery?.length ? campaign.gallery : [campaign.logoUrl];
+
+  return (
+    <div className="bg-white text-black mt-5">
+      {/* Hero + Gallery */}
+      <section>
+        <div className="max-w-screen-xl mx-auto px-4">
+          <div className="relative w-full h-[300px] sm:h-[400px] md:h-[500px] rounded-xl overflow-hidden">
+            <Image
+              src={images[0]}
+              alt="Campaign Hero"
+              fill
+              className="object-cover w-full h-full rounded-xl"
+            />
+          </div>
+        </div>
+      </section>
+
+      {/* Content */}
+      <section className="py-12">
+        <div className="max-w-screen-xl mx-auto px-6 grid md:grid-cols-3 gap-12">
+          {/* Left */}
+          <div className="md:col-span-2 space-y-10">
+            <div className="flex items-start gap-4">
+              <Image
+                src={campaign.logoUrl}
+                alt="Logo"
+                width={48}
+                height={48}
+                className="rounded"
+              />
+              <div>
+                <h1 className="text-3xl font-bold text-gray-900">{campaign.title}</h1>
+                <p className="text-gray-600 mt-2 text-[15px] leading-relaxed">
+                  {campaign.description}
+                </p>
+              </div>
+            </div>
+
+            {/* Key Info */}
+            <div className="space-y-6">
+              <div className="flex justify-between items-center">
+                <h2 className="text-xl font-bold flex items-center gap-2">
+                  <Lightbulb size={25} className="text-gray-700" />
+                  Key information
+                </h2>
+                <div className="flex items-center gap-4 text-sm text-blue-600">
+                  <a href="#" className="hover:underline flex items-center gap-1"><Globe size={16} /> Website</a>
+                  <a href="#" className="hover:underline flex items-center gap-1"><Building2 size={16} /> Company</a>
+                  <a href="#" className="hover:underline"><Linkedin size={16} /></a>
+                  <a href="#" className="hover:underline"><Instagram size={16} /></a>
+                  <a href="#" className="hover:underline"><Facebook size={16} /></a>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 bg-gray-50 p-6 rounded-xl shadow text-center text-sm">
+                <div>
+                  <p className="text-gray-500 text-xs font-medium">RAISED</p>
+                  <p className="font-bold text-lg">£100,000</p>
+                </div>
+                <div>
+                  <p className="text-gray-500 text-xs font-medium">TARGET</p>
+                  <p className="font-bold text-lg">{campaign.fundingTarget}</p>
+                </div>
+                <div>
+                  <p className="text-gray-500 text-xs font-medium">PLATFORM</p>
+                  <p className="font-bold text-lg">{campaign.platform || 'Custom'}</p>
+                </div>
+              </div>
+
+              <div className="bg-[#fdf8f3] border rounded-lg px-4 py-3 text-sm flex items-start gap-3">
+                <Info size={18} className="text-gray-500 mt-0.5" />
+                <p className="text-gray-700 leading-relaxed">
+                  Additional investment might not reflect on this card. Check full funding page for updates.
+                </p>
+              </div>
+
+              <div className="grid sm:grid-cols-2 gap-4 text-sm">
+                <div className="flex items-start gap-2"><CheckCircle className="text-orange-400 mt-1" size={18} /><p>Live on {campaign.platform || 'Platform'}</p></div>
+                <div className="flex items-start gap-2"><CheckCircle className="text-orange-400 mt-1" size={18} /><p>Trusted by early backers</p></div>
+              </div>
+            </div>
+          </div>
+
+          {/* Right Sidebar */}
+          <aside className="bg-gray-50 p-6 rounded-xl shadow-md sticky top-24 h-fit">
+            <p className="text-sm font-medium text-gray-500 mb-1">Funding Info</p>
+            <p className="text-xs text-gray-400 mb-4">Live on {campaign.platform || 'Custom'}</p>
+            <p className="text-sm font-semibold text-gray-800 mb-2">Invest in {campaign.title}</p>
+            <p className="text-sm text-gray-500 mb-4">Quick & easy signup required</p>
+            <button className="bg-yellow-400 w-full py-2 rounded-full font-medium mb-2 hover:bg-yellow-500">Join to invest</button>
+            <button className="border border-gray-300 w-full py-2 rounded-full font-medium hover:bg-gray-100">Login</button>
+          </aside>
+        </div>
+      </section>
+    </div>
+  );
+}

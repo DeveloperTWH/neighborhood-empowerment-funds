@@ -1,4 +1,4 @@
-// File: C:\Users\DAY\OneDrive\Desktop\Neighborhood\neighborhood-empowerment-funds\app\campaigns\page.tsx
+// File: C:\Users\Lenovo\OneDrive\Desktop\Techware hut\neighborhood-empowerment-funds\app\campaigns\page.tsx
 import * as entry from '../../../../app/campaigns/page.js'
 import type { ResolvingMetadata, ResolvingViewport } from 'next/dist/lib/metadata/types/metadata-interface.js'
 

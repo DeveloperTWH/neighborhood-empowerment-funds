@@ -382,3 +382,4 @@ const CampaignDetailPage = () => {
 };
 
 export default CampaignDetailPage;
+

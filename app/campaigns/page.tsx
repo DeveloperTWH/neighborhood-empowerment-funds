@@ -4,7 +4,8 @@ import React, { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import gsap from "gsap";
 
-const campaigns = new Array(6).fill({
+const dummyCampaigns = new Array(6).fill({
+  _id:"abb1",
   title: "POLYCADE",
   subtitle:
     "All of our merch so that they can go out and say, this is something I'm a part of.",
@@ -13,8 +14,18 @@ const campaigns = new Array(6).fill({
   img: "/campaign/image (14).png",
 });
 
+interface Campaign {
+  title: string;
+  description?: string;
+  platform?: string;
+  fundingTarget?: string;
+  logoUrl?: string;
+  amount?: string;
+}
+
 const CampaignsPage = () => {
   const [activeTab, setActiveTab] = useState("current");
+  const [liveCampaigns, setLiveCampaigns] = useState<Campaign[]>([]);
   const cardsRef = useRef<(HTMLDivElement | null)[]>([]);
   const exploreRef = useRef<HTMLDivElement | null>(null);
 
@@ -43,7 +54,25 @@ const CampaignsPage = () => {
         }
       );
     }
-  }, [activeTab]);
+  }, [activeTab, liveCampaigns]);
+
+  useEffect(() => {
+    async function fetchCampaigns() {
+      try {
+        const res = await fetch("/api/campaigns/public");
+        const data = await res.json();
+        if (data.success) {
+          setLiveCampaigns(data.campaigns);
+        }
+      } catch (err) {
+        console.error("Failed to fetch campaigns", err);
+      }
+    }
+
+    fetchCampaigns();
+  }, []);
+
+  const allCampaigns = [...dummyCampaigns, ...liveCampaigns];
 
   return (
     <div className="bg-white text-black">
@@ -120,7 +149,7 @@ const CampaignsPage = () => {
           })()}
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-12">
-            {campaigns.map((camp, index) => (
+            {allCampaigns.map((camp, index) => (
               <div
                 key={index}
                 ref={(el) => {
@@ -128,7 +157,7 @@ const CampaignsPage = () => {
                 }}
                 className="relative rounded-2xl overflow-hidden shadow-xl text-white h-96 flex flex-col justify-end p-6"
                 style={{
-                  backgroundImage: `url('${camp.img}')`,
+                  backgroundImage: `url('${camp.logoUrl || camp.img}')`,
                   backgroundSize: "cover",
                   backgroundPosition: "center",
                 }}
@@ -136,17 +165,22 @@ const CampaignsPage = () => {
                 <div className="bg-gradient-to-t from-black/80 via-black/40 to-transparent absolute inset-0 z-0" />
                 <div className="relative z-10">
                   <p className="font-bold text-xl mb-1">{camp.title}</p>
-                  <p className="text-sm mb-2">{camp.subtitle}</p>
+                  <p className="text-sm mb-2">
+                    {camp.description || camp.subtitle}
+                  </p>
                   <p className="text-pink-400 text-sm font-semibold mb-1">
-                    {camp.platform}
+                    {camp.platform || "CUSTOM"}
                   </p>
                   <p className="text-yellow-300 font-bold text-lg">
-                    {camp.amount}{" "}
+                    $ {camp.fundingTarget || camp.amount}{" "}
                     <span className="text-sm font-normal">Raised</span>
                   </p>
-                  <button className="mt-4 bg-yellow-400 text-black px-4 py-2 rounded font-medium text-sm hover:bg-yellow-500 transition">
+                  <a
+                    href={`/campaigns/${camp._id || camp.id || ""}`}
+                    className="mt-4 inline-block bg-yellow-400 text-black px-4 py-2 rounded font-medium text-sm hover:bg-yellow-500 transition"
+                  >
                     View Details
-                  </button>
+                  </a>
                 </div>
               </div>
             ))}
