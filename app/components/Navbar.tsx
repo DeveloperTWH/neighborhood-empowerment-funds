@@ -47,32 +47,34 @@ export default function Navbar() {
         {/* Desktop Menu */}
         <nav className="hidden md:flex space-x-6 items-center relative">
           <Link href="/">Home</Link>
-          <Link href="#">About</Link>
+          <Link href="/process">Our Process</Link>
 
           {/* Explore Dropdown */}
           <div className="group relative flex items-center space-x-1">
             <button className="flex items-center hover:text-yellow-500" type="button">
-              Explore <ChevronDown className="w-4 h-4 ml-1" />
+              Results <ChevronDown className="w-4 h-4 ml-1" />
             </button>
             <div className="absolute top-full left-0 hidden group-hover:block bg-white shadow-md rounded mt-2 py-2 w-40 z-50">
-              <Link href="#" className="block px-4 py-2 hover:bg-gray-100">All Campaigns</Link>
-              <Link href="#" className="block px-4 py-2 hover:bg-gray-100">Categories</Link>
-              <Link href="#" className="block px-4 py-2 hover:bg-gray-100">Success Stories</Link>
+              <Link href="#" className="block px-4 py-2 hover:bg-gray-100">Review</Link>
+              <Link href="/campaigns" className="block px-4 py-2 hover:bg-gray-100">Campaigns</Link>
+              <Link href="/blog" className="block px-4 py-2 hover:bg-gray-100">Blogs</Link>
             </div>
           </div>
 
           {/* Fundraise Dropdown */}
           <div className="group relative flex items-center space-x-1">
             <button className="flex items-center hover:text-yellow-500" type="button">
-              Fundraise <ChevronDown className="w-4 h-4 ml-1" />
+              About Us <ChevronDown className="w-4 h-4 ml-1" />
             </button>
             <div className="absolute top-full left-0 hidden group-hover:block bg-white shadow-md rounded mt-2 py-2 w-40 z-50">
-              <Link href="#" className="block px-4 py-2 hover:bg-gray-100">Start Campaign</Link>
-              <Link href="#" className="block px-4 py-2 hover:bg-gray-100">How It Works</Link>
+              <Link href="#" className="block px-4 py-2 hover:bg-gray-100">Team</Link>
+              <Link href="#" className="block px-4 py-2 hover:bg-gray-100">Tech</Link>
+              <Link href="/faq" className="block px-4 py-2 hover:bg-gray-100">FAQs</Link>
             </div>
           </div>
 
-          <Link href="#">Help Center</Link>
+          <Link href="/services">Our Service</Link>
+          <Link href="/contact">Contact Us</Link>
 
           {/* Auth / Avatar */}
           <div className="ml-4 relative">

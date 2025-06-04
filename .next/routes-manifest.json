@@ -85,6 +85,12 @@
       "namedRegex": "^/dashboard(?:/)?$"
     },
     {
+      "page": "/faq",
+      "regex": "^/faq(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/faq(?:/)?$"
+    },
+    {
       "page": "/process",
       "regex": "^/process(?:/)?$",
       "routeKeys": {},
