@@ -117,16 +117,7 @@ const campaignSchema = new mongoose.Schema({
         type: Date,
         default: null, // explicitly no investment time at creation
     },
-
-    createdAt: {
-        type: Date,
-        default: Date.now,
-    },
-    updatedAt: {
-        type: Date,
-        default: Date.now,
-    },
-});
+},{ timestamps: true });
 
 const Campaign = mongoose.models.Campaign || mongoose.model('Campaign', campaignSchema);
 

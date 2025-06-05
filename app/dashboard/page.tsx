@@ -2,7 +2,6 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { redirect } from 'next/navigation';
 import CreateCampaignForm from './components/CreateCampaignForm';
-import CampaignList from './components/CampaignList';
 
 interface ExtendedUser {
   name?: string | null;
@@ -23,19 +22,21 @@ export default async function DashboardPage() {
   const userData = {
     welcomeMessage: `Welcome back, ${user.name || user.email}!`,
     email: user.email ?? '',
-    role: user.role ?? 'user',
+    role: user.role ?? '',
     id: user.id ?? '',
   };
 
-  return (
-    <div className="min-h-screen p-8 bg-gray-50">
+return (
+  <div className="relative min-h-screen bg-gray-50">
+    <main className="p-8 pb-32 overflow-y-auto">
       <h1 className="text-3xl font-bold mb-4">Dashboard</h1>
       <p className="mb-2">{userData.welcomeMessage}</p>
       <p>Email: {userData.email}</p>
       <p>Role: {userData.role}</p>
 
       <CreateCampaignForm />
-      <CampaignList ownerId={userData.id} />
-    </div>
-  );
+    </main>
+  </div>
+);
+
 }

@@ -1,3 +1,4 @@
+import mongoose, { FilterQuery } from 'mongoose';
 import { NextResponse } from "next/server";
 import path from "path";
 import fs from "fs/promises";
@@ -28,31 +29,80 @@ function getStringField(field: FormDataEntryValue | null): string {
   return "";
 }
 
+
 export async function GET(req: Request) {
   try {
     await connectToDB();
 
     const url = new URL(req.url);
-    const ownerId = url.searchParams.get("ownerId");
+    const ownerId = url.searchParams.get('ownerId');
 
     if (!ownerId) {
       return NextResponse.json(
-        { success: false, error: "Missing ownerId" },
+        { success: false, error: 'Missing ownerId' },
         { status: 400 }
       );
     }
 
-    const campaigns = await Campaign.find({ ownerId }).sort({ createdAt: -1 });
+    if (!mongoose.Types.ObjectId.isValid(ownerId)) {
+      return NextResponse.json(
+        { success: false, error: 'Invalid ownerId' },
+        { status: 400 }
+      );
+    }
 
-    return NextResponse.json({ success: true, campaigns });
+    const page = parseInt(url.searchParams.get('page') || '1', 10);
+    const limit = parseInt(url.searchParams.get('limit') || '10', 10);
+    const skip = (page - 1) * limit;
+
+    const category = url.searchParams.get('category');
+    const status = url.searchParams.get('status');
+    const search = url.searchParams.get('search');
+
+    const query: FilterQuery<Record<string, unknown>> = { ownerId };
+
+    if (category && category !== 'All') {
+      query.categories = category;
+    }
+
+    if (status && status !== 'All') {
+      query.status = status;
+    }
+
+    if (search) {
+      query.$or = [
+        { title: { $regex: search, $options: 'i' } },
+        { description: { $regex: search, $options: 'i' } },
+      ];
+    }
+
+    const total = await Campaign.countDocuments(query);
+
+    const campaigns = await Campaign.find(query)
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit)
+      .lean();
+
+    const totalPages = Math.ceil(total / limit);
+
+    return NextResponse.json({
+      success: true,
+      campaigns,
+      total,
+      page,
+      limit,
+      totalPages,
+    });
   } catch (err) {
-    console.error("Error fetching campaigns:", err);
+    console.error('Error fetching campaigns:', err);
     return NextResponse.json(
-      { success: false, error: "Failed to fetch campaigns" },
+      { success: false, error: 'Failed to fetch campaigns' },
       { status: 500 }
     );
   }
 }
+
 
 export async function POST(req: Request) {
   try {

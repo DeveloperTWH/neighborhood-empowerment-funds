@@ -17,6 +17,7 @@ export default function Navbar() {
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   const getUserInitial = (name: string | null | undefined) => {
+    if (!name) return '';
     return name?.charAt(0).toUpperCase() ?? '';
   };
 
@@ -25,7 +26,7 @@ export default function Navbar() {
     function handleClickOutside(event: MouseEvent) {
       // Check if click target is inside dropdownRef element
       if (
-        dropdownRef.current && 
+        dropdownRef.current &&
         !dropdownRef.current.contains(event.target as Node)
       ) {
         setDropdownOpen(false);
@@ -100,9 +101,9 @@ export default function Navbar() {
                   aria-haspopup="true"
                   aria-expanded={dropdownOpen}
                 >
-                  {user.image ? (
+                  {user.avatar ? (
                     <Image
-                      src={user.image}
+                      src={user.avatar}
                       alt="User Avatar"
                       width={40}
                       height={40}
@@ -184,9 +185,9 @@ export default function Navbar() {
           ) : (
             <div className="pt-4 space-y-2 border-t mt-3">
               <div className="flex items-center space-x-3">
-                {user.image ? (
+                {user.avatar ? (
                   <Image
-                    src={user.image}
+                    src={user.avatar}
                     alt="User Avatar"
                     width={32}
                     height={32}
@@ -197,6 +198,7 @@ export default function Navbar() {
                     {getUserInitial(user.name)}
                   </div>
                 )}
+
                 <p className="text-sm font-medium">{user.name}</p>
               </div>
               <Link href="/profile" className="block text-sm text-gray-700 hover:underline" role="menuitem">
