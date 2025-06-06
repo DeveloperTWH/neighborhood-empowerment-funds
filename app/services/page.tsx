@@ -147,8 +147,6 @@ export default function ServicesPage() {
           <div className="absolute md:bottom-1 bottom-1 md:right-[30%] right-[55%] md:w-64 w-24 h-2 bg-primary/75 -rotate-2 -z-10"></div>
         </h1>
 
-        import Image from 'next/image';
-
         <div className="flex items-center md:gap-16 mt-14 md:justify-center gap-10 flex-wrap justify-center">
           <Image
             alt="logo1"

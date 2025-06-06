@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import {
   FacebookIcon,
@@ -7,8 +8,15 @@ import {
   InstagramIcon,
   LinkedinIcon,
 } from "lucide-react";
+import Image from "next/image";
 
 export default function Footer() {
+  const [year, setYear] = useState<number | null>(null);
+
+  useEffect(() => {
+    setYear(new Date().getFullYear());
+  }, []);
+
   return (
     <footer className="">
       {/* Sub-Footer CTA */}
@@ -30,9 +38,15 @@ export default function Footer() {
         <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8 items-start">
           {/* Brand / Logo */}
           <div>
-            <h2 className="text-2xl font-bold mb-4">
-              Neighborhood Empowerment Funds
-            </h2>
+            <Link href="/" className="flex items-center">
+              <Image
+                src="/index/logo.webp"
+                alt="Lift and Lunch Logo"
+                width={230}
+                height={200}
+                className="w-40 sm:w-48 md:w-56 lg:w-60 h-auto"
+              />
+            </Link>
             <p className="text-sm text-gray-400">
               Empowering local communities through crowdfunding and opportunity.
             </p>
@@ -41,28 +55,16 @@ export default function Footer() {
           {/* Social Links & Email */}
           <div className="md:text-center">
             <div className="flex space-x-4 justify-start md:justify-center mb-2">
-              <a
-                href="#"
-                className="text-white hover:text-yellow-400 transition"
-              >
+              <a href="#" className="text-white hover:text-yellow-400 transition">
                 <FacebookIcon size={20} />
               </a>
-              <a
-                href="#"
-                className="text-white hover:text-yellow-400 transition"
-              >
+              <a href="#" className="text-white hover:text-yellow-400 transition">
                 <TwitterIcon size={20} />
               </a>
-              <a
-                href="#"
-                className="text-white hover:text-yellow-400 transition"
-              >
+              <a href="#" className="text-white hover:text-yellow-400 transition">
                 <InstagramIcon size={20} />
               </a>
-              <a
-                href="#"
-                className="text-white hover:text-yellow-400 transition"
-              >
+              <a href="#" className="text-white hover:text-yellow-400 transition">
                 <LinkedinIcon size={20} />
               </a>
             </div>
@@ -80,22 +82,13 @@ export default function Footer() {
               <Link href="/about" className="hover:text-yellow-400 transition">
                 About
               </Link>
-              <Link
-                href="/how-it-works"
-                className="hover:text-yellow-400 transition"
-              >
+              <Link href="/how-it-works" className="hover:text-yellow-400 transition">
                 How It Works
               </Link>
-              <Link
-                href="/campaigns"
-                className="hover:text-yellow-400 transition"
-              >
+              <Link href="/campaigns" className="hover:text-yellow-400 transition">
                 Campaigns
               </Link>
-              <Link
-                href="/contact"
-                className="hover:text-yellow-400 transition"
-              >
+              <Link href="/contact" className="hover:text-yellow-400 transition">
                 Contact
               </Link>
               <Link href="/faq" className="hover:text-yellow-400 transition">
@@ -108,7 +101,7 @@ export default function Footer() {
 
       {/* Bottom Bar */}
       <div className="text-center text-sm text-gray-500 bg-gray-800 py-4">
-        © {new Date().getFullYear()} Neighborhood Funds. All rights reserved.
+        © {year ?? ""} Neighborhood Funds. All rights reserved.
       </div>
     </footer>
   );

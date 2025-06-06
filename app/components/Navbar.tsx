@@ -1,7 +1,7 @@
 'use client';
 
 import { signOut, useSession } from "next-auth/react";
-import { useState, useEffect, useRef } from "react";
+import { useState } from "react";
 import Image from 'next/image';
 import Link from 'next/link';
 import { ChevronDown, Menu, X } from 'lucide-react';
@@ -11,38 +11,38 @@ export default function Navbar() {
   const user = session?.user;
 
   const [isMobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [activeDropdown, setActiveDropdown] = useState<'results' | 'about' | 'profile' | null>(null);
+  let dropdownTimeout: NodeJS.Timeout;
 
-  // Use a ref typed for an HTMLDivElement
-  const dropdownRef = useRef<HTMLDivElement>(null);
+  const handleMouseEnter = (key: 'results' | 'about' | 'profile') => {
+    clearTimeout(dropdownTimeout);
+    setActiveDropdown(key);
+  };
+
+
+  const handleMouseLeave = () => {
+    dropdownTimeout = setTimeout(() => setActiveDropdown(null), 300); // 300ms delay to hide
+  };
+
+
 
   const getUserInitial = (name: string | null | undefined) => {
     if (!name) return '';
     return name?.charAt(0).toUpperCase() ?? '';
   };
-
-  // Close dropdown on outside click
-  useEffect(() => {
-    function handleClickOutside(event: MouseEvent) {
-      // Check if click target is inside dropdownRef element
-      if (
-        dropdownRef.current &&
-        !dropdownRef.current.contains(event.target as Node)
-      ) {
-        setDropdownOpen(false);
-      }
-    }
-
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
-
   return (
     <header className="bg-white border-b shadow-sm">
       <div className="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
         {/* Logo */}
-        <Link href="/" className="flex items-center text-xl font-bold leading-tight">
-          <Image src="/index/logo.webp" alt="Lift and Lunch Logo" width={230} height={200} priority />
+        <Link href="/" className="flex items-center">
+          <Image
+            src="/index/logo.webp"
+            alt="Lift and Lunch Logo"
+            width={230}
+            height={200}
+            priority
+            className="w-40 sm:w-48 md:w-56 lg:w-60 h-auto"
+          />
         </Link>
 
         {/* Desktop Menu */}
@@ -51,28 +51,48 @@ export default function Navbar() {
           <Link href="/process">Our Process</Link>
 
           {/* Explore Dropdown */}
-          <div className="group relative flex items-center space-x-1">
+          <div
+            className="relative flex items-center space-x-1"
+            onMouseEnter={() => handleMouseEnter('results')}
+            onMouseLeave={handleMouseLeave}
+          >
             <button className="flex items-center hover:text-yellow-500" type="button">
               Results <ChevronDown className="w-4 h-4 ml-1" />
             </button>
-            <div className="absolute top-full left-0 hidden group-hover:block bg-white shadow-md rounded mt-2 py-2 w-40 z-50">
-              <Link href="#" className="block px-4 py-2 hover:bg-gray-100">Review</Link>
-              <Link href="/campaigns" className="block px-4 py-2 hover:bg-gray-100">Campaigns</Link>
-              <Link href="/blog" className="block px-4 py-2 hover:bg-gray-100">Blogs</Link>
+            <div
+              className={`absolute top-full left-0 mt-2 py-2 w-40 z-50 bg-white shadow-md rounded transition-opacity duration-300 ${activeDropdown === 'results'
+                ? 'opacity-100 pointer-events-auto'
+                : 'opacity-0 pointer-events-none'
+                }`}
+            >
+              <Link href="#" onClick={() => setActiveDropdown(null)} className="block px-4 py-2 hover:bg-gray-100">Review</Link>
+              <Link href="/campaigns" onClick={() => setActiveDropdown(null)} className="block px-4 py-2 hover:bg-gray-100">Campaigns</Link>
+              <Link href="/blog" onClick={() => setActiveDropdown(null)} className="block px-4 py-2 hover:bg-gray-100">Blogs</Link>
             </div>
           </div>
 
+
           {/* Fundraise Dropdown */}
-          <div className="group relative flex items-center space-x-1">
+          <div
+            className="relative flex items-center space-x-1"
+            onMouseEnter={() => handleMouseEnter('about')}
+            onMouseLeave={handleMouseLeave}
+          >
             <button className="flex items-center hover:text-yellow-500" type="button">
               About Us <ChevronDown className="w-4 h-4 ml-1" />
             </button>
-            <div className="absolute top-full left-0 hidden group-hover:block bg-white shadow-md rounded mt-2 py-2 w-40 z-50">
-              <Link href="#" className="block px-4 py-2 hover:bg-gray-100">Team</Link>
-              <Link href="#" className="block px-4 py-2 hover:bg-gray-100">Tech</Link>
-              <Link href="/faq" className="block px-4 py-2 hover:bg-gray-100">FAQs</Link>
+            <div
+              className={`absolute top-full left-0 mt-2 py-2 w-40 z-50 bg-white shadow-md rounded transition-opacity duration-300 ${activeDropdown === 'about'
+                ? 'opacity-100 pointer-events-auto'
+                : 'opacity-0 pointer-events-none'
+                }`}
+            >
+              <Link href="#" onClick={() => setActiveDropdown(null)} className="block px-4 py-2 hover:bg-gray-100">Team</Link>
+              <Link href="#" onClick={() => setActiveDropdown(null)} className="block px-4 py-2 hover:bg-gray-100">Tech</Link>
+              <Link href="/faq" onClick={() => setActiveDropdown(null)} className="block px-4 py-2 hover:bg-gray-100">FAQs</Link>
             </div>
           </div>
+
 
           <Link href="/services">Our Service</Link>
           <Link href="/contact">Contact Us</Link>
@@ -93,13 +113,14 @@ export default function Navbar() {
                 </Link>
               </div>
             ) : (
-              <div className="relative" ref={dropdownRef}>
+              <div
+                className="relative"
+                onMouseEnter={() => handleMouseEnter('profile')}
+                onMouseLeave={handleMouseLeave}
+              >
                 <button
-                  onClick={() => setDropdownOpen(!dropdownOpen)}
                   className="w-10 h-10 rounded-full bg-yellow-400 flex items-center justify-center text-black font-semibold focus:outline-none"
                   type="button"
-                  aria-haspopup="true"
-                  aria-expanded={dropdownOpen}
                 >
                   {user.avatar ? (
                     <Image
@@ -114,22 +135,43 @@ export default function Navbar() {
                   )}
                 </button>
 
-                {dropdownOpen && (
-                  <div className="absolute right-0 mt-2 w-40 bg-white border rounded shadow-md z-50" role="menu">
-                    <Link href="/profile" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem">
-                      Profile
-                    </Link>
-                    <button
-                      onClick={() => signOut()}
-                      className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100"
-                      type="button"
-                      role="menuitem"
-                    >
-                      Sign Out
-                    </button>
-                  </div>
-                )}
+                <div
+                  className={`absolute right-0 mt-2 w-40 bg-white border rounded shadow-md z-50 transition-opacity duration-300 ${activeDropdown === 'profile'
+                    ? 'opacity-100 pointer-events-auto'
+                    : 'opacity-0 pointer-events-none'
+                    }`}
+                  role="menu"
+                >
+                  <Link
+                    href="/dashboard"
+                    onClick={() => setActiveDropdown(null)}
+                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                    role="menuitem"
+                  >
+                    Dashboard
+                  </Link>
+                  <Link
+                    href="/dashboard/profile"
+                    onClick={() => setActiveDropdown(null)}
+                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                    role="menuitem"
+                  >
+                    Profile
+                  </Link>
+                  <button
+                    onClick={() => {
+                      setActiveDropdown(null);
+                      signOut();
+                    }}
+                    className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100"
+                    type="button"
+                    role="menuitem"
+                  >
+                    Sign Out
+                  </button>
+                </div>
               </div>
+
             )}
           </div>
         </nav>
@@ -201,7 +243,10 @@ export default function Navbar() {
 
                 <p className="text-sm font-medium">{user.name}</p>
               </div>
-              <Link href="/profile" className="block text-sm text-gray-700 hover:underline" role="menuitem">
+              <Link href="/dashboard" className="block text-sm text-gray-700 hover:underline" role="menuitem">
+                dashboard
+              </Link>
+              <Link href="/dashboard/profile" className="block text-sm text-gray-700 hover:underline" role="menuitem">
                 Profile
               </Link>
               <button
