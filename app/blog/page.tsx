@@ -6,107 +6,132 @@ import Link from "next/link";
 import gsap from "gsap";
 import { Search, Clock, Calendar } from "lucide-react";
 
-const blogData = [
-  {
-    id: "1",
-    title: "Learn everything there is to know about the",
-    image: "/blog/1.png",
-    date: "02 Sep 2024",
-    readTime: "5 min read",
-    category: "Technology",
-    featured: true,
-    popularity: 10
-  },
-  {
-    id: "2",
-    title: "Learn everything there is to know about the",
-     image: "/blog/2.png",
-    date: "01 june 2025",
-    readTime: "6 min read",
-    category: "Art",
-    featured: true,
-    popularity: 5
-  },
-  {
-    id: "3",
-    title: "Learn everything there is to know about the",
-     image: "/blog/3.png",
-    date: "01 Sep 2024",
-    readTime: "5 min read",
-    category: "AI",
-    featured: true,
-    popularity: 7
-  },
-  ...Array.from({ length: 12 }).map((_, i) => ({
-    id: `${i + 4}`,
-    title: "Learn everything there is to know about the",
-    image: `/blog/${(i % 6) + 1}.png`,
-    date: "02 Sep 2024",
-    readTime: `${5 + (i % 3)} min read`,
-    category: i % 2 === 0 ? "Tech" : "Design",
-    featured: false,
-    popularity: Math.floor(Math.random() * 10)
-  }))
-];
+interface BlogPost {
+  _id: string;
+  title: string;
+  coverImage: string;
+  readTime: string;
+  createdAt: string;
+  category: string;
+  featured: boolean;
+  popularity: number;
+}
 
-const categories = ["All Categories", "Technology", "Art", "AI", "Design", "Business"];
+interface Category {
+  _id: string;
+  name: string;
+}
 
 export default function BlogPage() {
+  const [blogs, setBlogs] = useState<BlogPost[]>([]);
+  const [featuredBlogs, setFeaturedBlogs] = useState<BlogPost[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState("All Categories");
+  const [searchTermDebounced, setSearchTermDebounced] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [featuredTab, setFeaturedTab] = useState("Popular");
+  const [loading, setLoading] = useState(false);
   const blogsPerPage = 9;
 
   const featuredRef = useRef<HTMLDivElement>(null);
   const paginationRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (featuredRef.current) {
-      gsap.fromTo(
-        featuredRef.current.children,
-        { opacity: 0, y: 30 },
-        { opacity: 1, y: 0, duration: 0.5, stagger: 0.1, ease: "power2.out" }
-      );
-    }
-  }, [featuredTab]);
+    const timeout = setTimeout(() => {
+      setSearchTermDebounced(searchTerm);
+    }, 500);
+    return () => clearTimeout(timeout);
+  }, [searchTerm]);
 
   useEffect(() => {
-    if (paginationRef.current) {
-      gsap.fromTo(
-        paginationRef.current.children,
-        { scale: 0.8, opacity: 0 },
-        { scale: 1, opacity: 1, duration: 0.3, stagger: 0.05, ease: "back.out(1.7)" }
-      );
+    const fetchBlogs = async () => {
+      setLoading(true);
+      try {
+        const params = new URLSearchParams();
+        if (searchTermDebounced) params.append("search", searchTermDebounced);
+        if (selectedCategory) params.append("category", selectedCategory);
+        const res = await fetch(`/api/blog/list?${params}`);
+        const data = await res.json();
+        const allPosts = data.posts || [];
+        setBlogs(allPosts.filter((b: BlogPost) => !b.featured));
+        setFeaturedBlogs(allPosts.filter((b: BlogPost) => b.featured));
+      } catch (error) {
+        console.error("Failed to fetch blogs:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchBlogs();
+  }, [searchTermDebounced, selectedCategory]);
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const res = await fetch("/api/category");
+        const data = await res.json();
+        setCategories(data || []);
+      } catch (error) {
+        console.error("Failed to fetch categories:", error);
+      }
+    };
+    fetchCategories();
+  }, []);
+
+  useEffect(() => {
+    if (featuredRef.current && featuredRef.current.children.length > 0) {
+      requestAnimationFrame(() => {
+        gsap.fromTo(
+          featuredRef.current!.children,
+          { opacity: 0, y: 30 },
+          {
+            opacity: 1,
+            y: 0,
+            duration: 0.5,
+            stagger: 0.1,
+            ease: "power2.out",
+          }
+        );
+      });
+    }
+  }, [featuredTab, featuredBlogs]);
+
+  useEffect(() => {
+    if (paginationRef.current && paginationRef.current.children.length > 0) {
+      requestAnimationFrame(() => {
+        gsap.fromTo(
+          paginationRef.current!.children,
+          { scale: 0.8, opacity: 0 },
+          {
+            scale: 1,
+            opacity: 1,
+            duration: 0.3,
+            stagger: 0.05,
+            ease: "back.out(1.7)",
+          }
+        );
+      });
     }
   }, [currentPage]);
 
-  const filteredBlogs = blogData.filter(
-    (blog) =>
-      (selectedCategory === "All Categories" || blog.category === selectedCategory) &&
-      blog.title.toLowerCase().includes(searchTerm.toLowerCase())
+  const featuredSorted = [...featuredBlogs].sort((a, b) =>
+    featuredTab === "Popular"
+      ? b.popularity - a.popularity
+      : new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
   );
 
   const indexOfLast = currentPage * blogsPerPage;
   const indexOfFirst = indexOfLast - blogsPerPage;
-  const currentBlogs = filteredBlogs.slice(indexOfFirst, indexOfLast);
-  const totalPages = Math.ceil(filteredBlogs.length / blogsPerPage);
-
-  const featuredSorted = blogData
-    .filter((b) => b.featured)
-    .sort((a, b) =>
-      featuredTab === "Popular"
-        ? b.popularity - a.popularity
-        : new Date(b.date).getTime() - new Date(a.date).getTime()
-    );
+  const currentBlogs = blogs.slice(indexOfFirst, indexOfLast);
+  const totalPages = Math.ceil(blogs.length / blogsPerPage);
 
   return (
     <div className="bg-white text-black">
       <section className="max-w-screen-xl mx-auto px-4 py-16">
-        {/* Header */}
+        {/* Featured */}
         <div className="flex justify-between items-center mb-8">
           <h1 className="text-3xl font-bold">
-            OUR FEATURED <span className="underline decoration-yellow-400">CAMPAIGNS</span>
+            OUR FEATURED <span className="underline decoration-yellow-400">BLOG</span>
           </h1>
           <div className="flex gap-2">
             {["Popular", "Recent"].map((tab) => (
@@ -114,7 +139,9 @@ export default function BlogPage() {
                 key={tab}
                 onClick={() => setFeaturedTab(tab)}
                 className={`px-4 py-1 rounded-full text-sm border ${
-                  featuredTab === tab ? "bg-yellow-400 text-black" : "bg-white text-gray-600 border-gray-300"
+                  featuredTab === tab
+                    ? "bg-yellow-400 text-black"
+                    : "bg-white text-gray-600 border-gray-300"
                 }`}
               >
                 {tab}
@@ -123,26 +150,15 @@ export default function BlogPage() {
           </div>
         </div>
 
-        {/* Featured Blogs */}
-        <div className="grid md:grid-cols-3 gap-6 mb-12" ref={featuredRef}>
-          {featuredSorted.map((blog) => (
-            <div key={blog.id} className="space-y-2">
-              <Image src={blog.image} alt={blog.title} width={400} height={250} className="rounded-md w-full h-[220px] object-cover" />
-              <div className="flex items-center text-xs text-gray-500 gap-4">
-                <span className="flex items-center gap-1"><Clock size={14} /> {blog.readTime}</span>
-                <span className="flex items-center gap-1"><Calendar size={14} /> {blog.date}</span>
-              </div>
-              <h3 className="text-sm font-semibold leading-snug">
-                {blog.title}
-              </h3>
-              <Link href={`/blog/${blog.id}`} className="text-xs text-yellow-600 font-medium hover:underline">
-                Read More →
-              </Link>
-            </div>
-          ))}
-        </div>
+        {featuredSorted.length > 0 && (
+          <div className="grid md:grid-cols-3 gap-6 mb-12" ref={featuredRef}>
+            {featuredSorted.map((blog) => (
+              <BlogCard key={blog._id} blog={blog} />
+            ))}
+          </div>
+        )}
 
-        {/* Search & Filters */}
+        {/* Filters */}
         <div className="bg-gray-50 p-4 rounded-md mb-8">
           <div className="flex items-center gap-2 border px-4 py-2 rounded-full bg-white mb-4">
             <Search size={16} className="text-gray-500" />
@@ -150,41 +166,56 @@ export default function BlogPage() {
               type="text"
               placeholder="Search Blogs"
               value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
+              onChange={(e) => {
+                setSearchTerm(e.target.value);
+                setCurrentPage(1);
+              }}
               className="outline-none w-full bg-transparent text-sm"
             />
           </div>
 
           <div className="flex gap-2 overflow-x-auto whitespace-nowrap text-sm">
+            <button
+              onClick={() => {
+                setSelectedCategory("");
+                setCurrentPage(1);
+              }}
+              className={`px-4 py-1 rounded-full border ${
+                selectedCategory === ""
+                  ? "bg-yellow-400 text-black"
+                  : "bg-white text-gray-600 border-gray-300"
+              }`}
+            >
+              All Categories
+            </button>
             {categories.map((cat) => (
               <button
-                key={cat}
-                onClick={() => setSelectedCategory(cat)}
-                className={`px-4 py-1 rounded-full border ${selectedCategory === cat ? "bg-yellow-400 text-black" : "bg-white text-gray-600 border-gray-300"}`}
+                key={cat._id}
+                onClick={() => {
+                  setSelectedCategory(cat._id);
+                  setCurrentPage(1);
+                }}
+                className={`px-4 py-1 rounded-full border ${
+                  selectedCategory === cat._id
+                    ? "bg-yellow-400 text-black"
+                    : "bg-white text-gray-600 border-gray-300"
+                }`}
               >
-                {cat}
+                {cat.name}
               </button>
             ))}
           </div>
         </div>
 
-        {/* Blog Cards Grid */}
+        {/* Blogs Grid */}
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {currentBlogs.map((blog) => (
-            <div key={blog.id} className="space-y-2">
-              <Image src={blog.image} alt={blog.title} width={400} height={250} className="rounded-md w-full h-[220px] object-cover" />
-              <div className="flex items-center text-xs text-gray-500 gap-4">
-                <span className="flex items-center gap-1"><Clock size={14} /> {blog.readTime}</span>
-                <span className="flex items-center gap-1"><Calendar size={14} /> {blog.date}</span>
-              </div>
-              <h3 className="text-sm font-semibold leading-snug">
-                {blog.title}
-              </h3>
-              <Link href={`/blog/${blog.id}`} className="text-xs text-yellow-600 font-medium hover:underline">
-                Read More →
-              </Link>
+          {loading ? (
+            <div className="col-span-full text-center py-10">
+              <span className="inline-block h-6 w-6 border-4 border-yellow-400 border-t-transparent rounded-full animate-spin"></span>
             </div>
-          ))}
+          ) : (
+            currentBlogs.map((blog) => <BlogCard key={blog._id} blog={blog} />)
+          )}
         </div>
 
         {/* Pagination */}
@@ -193,7 +224,11 @@ export default function BlogPage() {
             <button
               key={num}
               onClick={() => setCurrentPage(num)}
-              className={`w-8 h-8 rounded-full text-sm font-medium ${currentPage === num ? "bg-black text-white" : "bg-gray-200 text-black"}`}
+              className={`w-8 h-8 rounded-full text-sm font-medium ${
+                currentPage === num
+                  ? "bg-black text-white"
+                  : "bg-gray-200 text-black"
+              }`}
             >
               {num}
             </button>
@@ -203,3 +238,30 @@ export default function BlogPage() {
     </div>
   );
 }
+
+const BlogCard = ({ blog }: { blog: BlogPost }) => (
+  <div className="space-y-2">
+    <Image
+      src={blog.coverImage}
+      alt={blog.title}
+      width={400}
+      height={250}
+      className="rounded-md w-full h-[220px] object-cover"
+    />
+    <div className="flex items-center text-xs text-gray-500 gap-4">
+      <span className="flex items-center gap-1">
+        <Clock size={14} /> {blog.readTime} min read
+      </span>
+      <span className="flex items-center gap-1">
+        <Calendar size={14} /> {new Date(blog.createdAt).toLocaleDateString()}
+      </span>
+    </div>
+    <h3 className="text-sm font-semibold leading-snug">{blog.title}</h3>
+    <Link
+      href={`/blog/${blog._id}`}
+      className="text-xs text-yellow-600 font-medium hover:underline"
+    >
+      Read More →
+    </Link>
+  </div>
+);
