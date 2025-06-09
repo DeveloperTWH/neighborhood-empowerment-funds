@@ -12,11 +12,6 @@ type BlogFilter = {
 
 export async function GET(req: NextRequest) {
   try {
-    const session = await getServerSession(authOptions);
-    if (!session || session.user?.role !== 'admin') {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
     await connectToDB();
 
     const { searchParams } = new URL(req.url);
