@@ -5,8 +5,8 @@
   "/api/auth/signup/route": "app/api/auth/signup/route.js",
   "/api/blog/[id]/route": "app/api/blog/[id]/route.js",
   "/api/blog/create/route": "app/api/blog/create/route.js",
-  "/api/blog/list/route": "app/api/blog/list/route.js",
   "/api/blog/upload/route": "app/api/blog/upload/route.js",
+  "/api/blog/list/route": "app/api/blog/list/route.js",
   "/api/campaigns/[id]/route": "app/api/campaigns/[id]/route.js",
   "/api/campaigns/public/route": "app/api/campaigns/public/route.js",
   "/api/category/route": "app/api/category/route.js",
@@ -29,7 +29,7 @@
   "/services/page": "app/services/page.js",
   "/signin/page": "app/signin/page.js",
   "/signup/page": "app/signup/page.js",
+  "/dashboard/profile/page": "app/dashboard/profile/page.js",
   "/dashboard/campaigns/page": "app/dashboard/campaigns/page.js",
-  "/dashboard/page": "app/dashboard/page.js",
-  "/dashboard/profile/page": "app/dashboard/profile/page.js"
+  "/dashboard/page": "app/dashboard/page.js"
 }

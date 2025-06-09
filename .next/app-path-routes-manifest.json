@@ -5,8 +5,8 @@
   "/api/auth/signup/route": "/api/auth/signup",
   "/api/blog/[id]/route": "/api/blog/[id]",
   "/api/blog/create/route": "/api/blog/create",
-  "/api/blog/list/route": "/api/blog/list",
   "/api/blog/upload/route": "/api/blog/upload",
+  "/api/blog/list/route": "/api/blog/list",
   "/api/campaigns/[id]/route": "/api/campaigns/[id]",
   "/api/campaigns/public/route": "/api/campaigns/public",
   "/api/category/route": "/api/category",
@@ -29,7 +29,7 @@
   "/services/page": "/services",
   "/signin/page": "/signin",
   "/signup/page": "/signup",
+  "/dashboard/profile/page": "/dashboard/profile",
   "/dashboard/campaigns/page": "/dashboard/campaigns",
-  "/dashboard/page": "/dashboard",
-  "/dashboard/profile/page": "/dashboard/profile"
+  "/dashboard/page": "/dashboard"
 }
