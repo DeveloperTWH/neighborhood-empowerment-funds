@@ -30,6 +30,7 @@ export default function BlogPage() {
   const [searchTermDebounced, setSearchTermDebounced] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
   const [featuredTab, setFeaturedTab] = useState("Popular");
   const [loading, setLoading] = useState(false);
   const blogsPerPage = 9;
@@ -40,6 +41,7 @@ export default function BlogPage() {
   useEffect(() => {
     const timeout = setTimeout(() => {
       setSearchTermDebounced(searchTerm);
+      setCurrentPage(1);
     }, 500);
     return () => clearTimeout(timeout);
   }, [searchTerm]);
@@ -51,11 +53,15 @@ export default function BlogPage() {
         const params = new URLSearchParams();
         if (searchTermDebounced) params.append("search", searchTermDebounced);
         if (selectedCategory) params.append("category", selectedCategory);
-        const res = await fetch(`/api/blog/list?${params}`);
+        params.append("page", currentPage.toString());
+        params.append("limit", blogsPerPage.toString());
+
+        const res = await fetch(`/api/blog/list?${params.toString()}`);
         const data = await res.json();
         const allPosts = data.posts || [];
-        setBlogs(allPosts.filter((b: BlogPost) => !b.featured));
-        setFeaturedBlogs(allPosts.filter((b: BlogPost) => b.featured));
+        setTotalPages(Math.ceil(data.total / blogsPerPage));
+        setBlogs(allPosts); // Only non-featured blogs fetched here now
+
       } catch (error) {
         console.error("Failed to fetch blogs:", error);
       } finally {
@@ -63,7 +69,26 @@ export default function BlogPage() {
       }
     };
     fetchBlogs();
-  }, [searchTermDebounced, selectedCategory]);
+  }, [searchTermDebounced, selectedCategory, currentPage]);
+
+  useEffect(() => {
+    const fetchFeaturedBlogs = async () => {
+      try {
+        const res = await fetch("/api/blog/featured");
+        const data = await res.json();
+        console.log("just chceking");
+        
+        console.log(data.blogs);
+        
+        setFeaturedBlogs(data.blogs || []);
+      } catch (error) {
+        console.error("Failed to fetch featured blogs:", error);
+      }
+    };
+
+    fetchFeaturedBlogs();
+  }, []);
+
 
   useEffect(() => {
     const fetchCategories = async () => {
@@ -120,11 +145,6 @@ export default function BlogPage() {
       : new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
   );
 
-  const indexOfLast = currentPage * blogsPerPage;
-  const indexOfFirst = indexOfLast - blogsPerPage;
-  const currentBlogs = blogs.slice(indexOfFirst, indexOfLast);
-  const totalPages = Math.ceil(blogs.length / blogsPerPage);
-
   return (
     <div className="bg-white text-black">
       <section className="max-w-screen-xl mx-auto px-4 py-16">
@@ -138,11 +158,10 @@ export default function BlogPage() {
               <button
                 key={tab}
                 onClick={() => setFeaturedTab(tab)}
-                className={`px-4 py-1 rounded-full text-sm border ${
-                  featuredTab === tab
+                className={`px-4 py-1 rounded-full text-sm border ${featuredTab === tab
                     ? "bg-yellow-400 text-black"
                     : "bg-white text-gray-600 border-gray-300"
-                }`}
+                  }`}
               >
                 {tab}
               </button>
@@ -166,10 +185,7 @@ export default function BlogPage() {
               type="text"
               placeholder="Search Blogs"
               value={searchTerm}
-              onChange={(e) => {
-                setSearchTerm(e.target.value);
-                setCurrentPage(1);
-              }}
+              onChange={(e) => setSearchTerm(e.target.value)}
               className="outline-none w-full bg-transparent text-sm"
             />
           </div>
@@ -180,11 +196,10 @@ export default function BlogPage() {
                 setSelectedCategory("");
                 setCurrentPage(1);
               }}
-              className={`px-4 py-1 rounded-full border ${
-                selectedCategory === ""
+              className={`px-4 py-1 rounded-full border ${selectedCategory === ""
                   ? "bg-yellow-400 text-black"
                   : "bg-white text-gray-600 border-gray-300"
-              }`}
+                }`}
             >
               All Categories
             </button>
@@ -195,11 +210,10 @@ export default function BlogPage() {
                   setSelectedCategory(cat._id);
                   setCurrentPage(1);
                 }}
-                className={`px-4 py-1 rounded-full border ${
-                  selectedCategory === cat._id
+                className={`px-4 py-1 rounded-full border ${selectedCategory === cat._id
                     ? "bg-yellow-400 text-black"
                     : "bg-white text-gray-600 border-gray-300"
-                }`}
+                  }`}
               >
                 {cat.name}
               </button>
@@ -214,26 +228,27 @@ export default function BlogPage() {
               <span className="inline-block h-6 w-6 border-4 border-yellow-400 border-t-transparent rounded-full animate-spin"></span>
             </div>
           ) : (
-            currentBlogs.map((blog) => <BlogCard key={blog._id} blog={blog} />)
+            blogs.map((blog) => <BlogCard key={blog._id} blog={blog} />)
           )}
         </div>
 
         {/* Pagination */}
-        <div ref={paginationRef} className="mt-10 flex justify-center gap-2">
-          {Array.from({ length: totalPages }, (_, i) => i + 1).map((num) => (
-            <button
-              key={num}
-              onClick={() => setCurrentPage(num)}
-              className={`w-8 h-8 rounded-full text-sm font-medium ${
-                currentPage === num
-                  ? "bg-black text-white"
-                  : "bg-gray-200 text-black"
-              }`}
-            >
-              {num}
-            </button>
-          ))}
-        </div>
+        {totalPages > 1 && (
+          <div ref={paginationRef} className="mt-10 flex justify-center gap-2 flex-wrap">
+            {Array.from({ length: totalPages }, (_, i) => i + 1).map((num) => (
+              <button
+                key={num}
+                onClick={() => setCurrentPage(num)}
+                className={`w-8 h-8 rounded-full text-sm font-medium ${currentPage === num
+                    ? "bg-black text-white"
+                    : "bg-gray-200 text-black"
+                  }`}
+              >
+                {num}
+              </button>
+            ))}
+          </div>
+        )}
       </section>
     </div>
   );

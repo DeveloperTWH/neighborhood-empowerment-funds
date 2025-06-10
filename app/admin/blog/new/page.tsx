@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { EditorContent, useEditor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import Image from "@tiptap/extension-image";
@@ -32,6 +32,22 @@ export default function AddBlogPage() {
   const [readTime, setReadTime] = useState<number>(0);
   const [showDropdown, setShowDropdown] = useState(false);
   const [featured, setFeatured] = useState(false);
+  const uploadedInlineImages = useRef<string[]>([]);
+  const blogSubmitted = useRef(false);
+
+
+
+  useEffect(() => {
+    return () => {
+      if (!blogSubmitted.current && uploadedInlineImages.current.length > 0) {
+        fetch("/api/blog/cleanup-inline-images", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ images: uploadedInlineImages.current }),
+        });
+      }
+    };
+  }, []);
 
 
 
@@ -88,12 +104,14 @@ export default function AddBlogPage() {
       if (!res.ok) throw new Error("Image upload failed");
 
       const data = await res.json();
+      uploadedInlineImages.current.push(data.url); // ✅ Track image
       editor?.chain().focus().setImage({ src: data.url }).run();
     } catch (err) {
       console.error(err);
       toast.error("Failed to upload inline image");
     }
   };
+
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -139,6 +157,7 @@ export default function AddBlogPage() {
       if (!createRes.ok) throw new Error("Blog creation failed");
 
       toast.success("Blog post submitted!");
+      blogSubmitted.current = true;
       console.log({
         title,
         author: session?.user?.name || "Anonymous",

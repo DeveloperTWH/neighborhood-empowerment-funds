@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useState, useCallback } from "react";
-import { Pencil, Trash2, Plus } from "lucide-react";
+import { Pencil, Trash2, Plus, ChevronLeft, ChevronRight } from "lucide-react";
 
 interface BlogPost {
   _id: string;
@@ -26,6 +26,9 @@ export default function BlogAdminPage() {
   const [categories, setCategories] = useState<Category[]>([]);
   const [selectedCategory, setSelectedCategory] = useState("");
   const [updating, setUpdating] = useState(false);
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const LIMIT = 3;
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -40,15 +43,19 @@ export default function BlogAdminPage() {
       const params = new URLSearchParams();
       if (debouncedSearch) params.append("search", debouncedSearch);
       if (selectedCategory) params.append("category", selectedCategory);
+      params.append("page", page.toString());
+      params.append("limit", LIMIT.toString());
+
       const res = await fetch(`/api/blog/list?${params.toString()}`);
       const data = await res.json();
       setPosts(data.posts);
+      setTotalPages(Math.ceil(data.total / LIMIT));
     } catch (err) {
       console.error("Failed to fetch blog posts", err);
     } finally {
       setLoading(false);
     }
-  }, [debouncedSearch, selectedCategory]);
+  }, [debouncedSearch, selectedCategory, page]);
 
   useEffect(() => {
     fetchPosts();
@@ -82,23 +89,36 @@ export default function BlogAdminPage() {
     }
   };
 
-  const setFeatured = async (id: string) => {
+  const toggleFeatured = async (id: string, isCurrentlyFeatured: boolean) => {
     setUpdating(true);
     try {
-      const res = await fetch(`/api/blog/feature/${id}`, { method: "PUT" });
-      if (res.ok) {
-        setPosts((prev) =>
-          prev.map((post) => ({
-            ...post,
-            featured: post._id === id,
-          }))
-        );
-      } else {
-        alert("Failed to update featured post.");
+      if (!isCurrentlyFeatured) {
+        const currentFeaturedCount = posts.filter((post) => post.featured).length;
+        if (currentFeaturedCount >= 6) {
+          alert("You can only feature up to 6 blog posts.");
+          return;
+        }
       }
+
+      const res = await fetch(`/api/blog/feature/${id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ featured: !isCurrentlyFeatured }),
+      });
+
+      if (!res.ok) {
+        alert("Failed to update featured status.");
+        return;
+      }
+
+      setPosts((prev) =>
+        prev.map((post) =>
+          post._id === id ? { ...post, featured: !isCurrentlyFeatured } : post
+        )
+      );
     } catch (err) {
-      console.error(err);
-      alert("Error setting featured blog.");
+      console.error("Feature toggle error:", err);
+      alert("Something went wrong while updating.");
     } finally {
       setUpdating(false);
     }
@@ -121,7 +141,10 @@ export default function BlogAdminPage() {
         <select
           className="w-full sm:w-1/4 px-4 py-2 border rounded-lg"
           value={selectedCategory}
-          onChange={(e) => setSelectedCategory(e.target.value)}
+          onChange={(e) => {
+            setSelectedCategory(e.target.value);
+            setPage(1); // reset page on filter
+          }}
         >
           <option value="">All Categories</option>
           {categories.map((cat) => (
@@ -134,7 +157,10 @@ export default function BlogAdminPage() {
           type="text"
           placeholder="Search by title, author or content..."
           value={search}
-          onChange={(e) => setSearch(e.target.value)}
+          onChange={(e) => {
+            setSearch(e.target.value);
+            setPage(1); // reset page on search
+          }}
           className="w-full sm:w-3/4 px-6 py-3 border rounded-lg"
         />
       </div>
@@ -144,49 +170,74 @@ export default function BlogAdminPage() {
       ) : posts.length === 0 ? (
         <div className="text-center text-gray-500 py-12">No blog posts found.</div>
       ) : (
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {posts.map((post) => (
-            <div
-              key={post._id}
-              className="bg-white rounded shadow p-4 flex flex-col justify-between"
-            >
-              <img
-                src={post.coverImage}
-                alt={post.title}
-                className="rounded-md h-40 w-full object-cover mb-3"
-              />
-              <h2 className="text-xl font-semibold text-gray-800">{post.title}</h2>
-              <p className="text-sm text-gray-500 mb-1">
-                By {post.author} • {new Date(post.createdAt).toLocaleDateString()}
-              </p>
-              <div className="flex items-center gap-2 mb-2">
-                <input
-                  type="radio"
-                  name="featured"
-                  checked={post.featured}
-                  disabled={updating}
-                  onChange={() => setFeatured(post._id)}
-                  className="w-4 h-4"
+        <>
+          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {posts.map((post) => (
+              <div
+                key={post._id}
+                className="bg-white rounded shadow p-4 flex flex-col justify-between"
+              >
+                <img
+                  src={post.coverImage}
+                  alt={post.title}
+                  className="rounded-md h-40 w-full object-cover mb-3"
                 />
-                <span className="text-sm text-gray-700">Featured</span>
+                <h2 className="text-xl font-semibold text-gray-800">{post.title}</h2>
+                <p className="text-sm text-gray-500 mb-1">
+                  By {post.author} • {new Date(post.createdAt).toLocaleDateString()}
+                </p>
+                <div className="mb-2">
+                  <button
+                    onClick={() => toggleFeatured(post._id, post.featured)}
+                    disabled={updating}
+                    className={`flex items-center justify-center gap-2 px-4 py-1.5 rounded-full text-sm font-medium transition duration-200 shadow-sm ${post.featured
+                        ? "bg-green-100 text-green-700 hover:bg-green-200"
+                        : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                      }`}
+                  >
+                    {post.featured ? "★ Featured" : "☆ Mark as Featured"}
+                  </button>
+                </div>
+
+                <div className="flex justify-end gap-3">
+                  <Link
+                    href={`/admin/blog/${post._id}`}
+                    className="text-blue-600 hover:underline inline-flex items-center"
+                  >
+                    <Pencil className="w-4 h-4 mr-1" /> Edit
+                  </Link>
+                  <button
+                    onClick={() => handleDelete(post._id)}
+                    className="text-red-600 hover:underline inline-flex items-center"
+                  >
+                    <Trash2 className="w-4 h-4 mr-1" /> Delete
+                  </button>
+                </div>
               </div>
-              <div className="flex justify-end gap-3">
-                <Link
-                  href={`/admin/blog/edit/${post._id}`}
-                  className="text-blue-600 hover:underline inline-flex items-center"
-                >
-                  <Pencil className="w-4 h-4 mr-1" /> Edit
-                </Link>
-                <button
-                  onClick={() => handleDelete(post._id)}
-                  className="text-red-600 hover:underline inline-flex items-center"
-                >
-                  <Trash2 className="w-4 h-4 mr-1" /> Delete
-                </button>
-              </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+
+          {/* Pagination Controls */}
+          <div className="flex justify-center items-center gap-4 mt-8">
+            <button
+              onClick={() => setPage((p) => Math.max(1, p - 1))}
+              disabled={page === 1}
+              className="px-3 py-1 border rounded hover:bg-gray-200 disabled:opacity-50"
+            >
+              <ChevronLeft />
+            </button>
+            <span className="font-medium text-gray-600">
+              Page {page} of {totalPages}
+            </span>
+            <button
+              onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+              disabled={page === totalPages}
+              className="px-3 py-1 border rounded hover:bg-gray-200 disabled:opacity-50"
+            >
+              <ChevronRight />
+            </button>
+          </div>
+        </>
       )}
     </div>
   );
