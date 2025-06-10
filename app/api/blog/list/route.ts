@@ -20,7 +20,7 @@ export async function GET(req: NextRequest) {
     const search = searchParams.get('search')?.toLowerCase() || "";
     const category = searchParams.get('category');
 
-    const filter: BlogFilter = {};
+    const filter:  BlogFilter  = {};
     if (search) {
       filter.$or = [
         { title: { $regex: search, $options: 'i' } },
@@ -39,13 +39,7 @@ export async function GET(req: NextRequest) {
       .limit(limit)
       .lean();
 
-    return new NextResponse(JSON.stringify({ posts, total: totalPosts, page, limit }), {
-      status: 200,
-      headers: {
-        'Content-Type': 'application/json',
-        'Cache-Control': 'public, max-age=60', // ✅ cache for 60 seconds
-      },
-    });
+    return NextResponse.json({ posts, total: totalPosts, page, limit }, { status: 200 });
   } catch (error) {
     console.error('[BLOG_LIST_ERROR]', error);
     return NextResponse.json({ error: 'Something went wrong' }, { status: 500 });

@@ -28,7 +28,7 @@ export default function BlogAdminPage() {
   const [updating, setUpdating] = useState(false);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-  const LIMIT = 3;
+  const LIMIT = 9;
 
   useEffect(() => {
     const timer = setTimeout(() => {
