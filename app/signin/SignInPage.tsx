@@ -8,7 +8,7 @@ export default function SignInPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const callbackUrl = searchParams.get('callbackUrl') || '/dashboard';
-  const { status } = useSession();
+  const { data: session, status } = useSession();
 
   const [form, setForm] = useState({ email: '', password: '' });
   const [error, setError] = useState('');
@@ -17,12 +17,17 @@ export default function SignInPage() {
   // Handle session status
   useEffect(() => {
     if (status === 'authenticated') {
-      router.replace(callbackUrl);
+      const role = session?.user?.role;
+
+      if (role === "admin") {
+        router.replace("/admin/dashboard");
+      } else {
+        router.replace("/dashboard");
+      }
     } else if (status === 'unauthenticated') {
       setIsReady(true);
     }
-    // We do not render anything until this logic is done
-  }, [status, router, callbackUrl]);
+  }, [status, session, router]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -42,12 +47,13 @@ export default function SignInPage() {
     if (res?.error) {
       setError('Invalid email or password');
     } else {
-      router.replace(res?.url || callbackUrl);
+      router.replace('/redirect-by-role');
     }
+
   };
 
   const handleGoogleLogin = () => {
-    signIn('google', { callbackUrl });
+    signIn('google', { callbackUrl: '/redirect-by-role' });
   };
 
   // 🔄 Show full-screen loader until ready
