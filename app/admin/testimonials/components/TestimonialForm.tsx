@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import toast from 'react-hot-toast';
 
 interface Testimonial {
   _id?: string;
@@ -68,6 +69,10 @@ export default function TestimonialForm({ selected, onSuccess, clearSelected }: 
     formData.append('quote', form.quote.trim());
     formData.append('rating', String(form.rating));
     if (form.photo) formData.append('photo', form.photo);
+    if (!selected && !form.photo) {
+      toast("Please upload The Photos !");
+      return;
+    }
 
     setLoading(true);
     try {

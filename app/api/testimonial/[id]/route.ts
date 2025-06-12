@@ -8,14 +8,15 @@ import path from 'path';
 import { v4 as uuidv4 } from 'uuid';
 
 
-export async function PUT(req: NextRequest, { params }: { params: { id: string } }) {
+export async function PUT(req: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
     if (!session || session.user.role !== 'admin') {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const { id } = await params;
+    const url = new URL(req.url);
+    const id = url.pathname.split("/").pop();
     const formData = await req.formData();
 
     const name = formData.get('name')?.toString() || '';
@@ -62,14 +63,15 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
   }
 }
 
-export async function DELETE(_: NextRequest, { params }: { params: { id: string } }) {
+export async function DELETE(req: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
     if (!session || session.user.role !== 'admin') {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const { id } = await params;
+    const url = new URL(req.url);
+    const id = url.pathname.split("/").pop();
     await connectToDB();
 
     const testimonial = await Testimonial.findById(id);
